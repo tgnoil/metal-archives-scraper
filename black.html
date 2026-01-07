@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Black Metal Albums</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; }
+    h1 { margin-bottom: 0.2rem; }
+    small { color: #aaa; }
+    table { border-collapse: collapse; width: 100%; margin-top: 0.5rem; }
+    th, td { border: 1px solid #333; padding: 6px 8px; font-size: 0.9rem; }
+    th { cursor: pointer; background: #222; }
+    tr:nth-child(even) { background: #181818; }
+    tr:nth-child(odd) { background: #141414; }
+    a { color: #7fd0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .filters { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .filters input { padding: 4px 6px; margin-right: 8px; width: 220px; }
+  </style>
+</head>
+<body>
+  <h1>Black Metal Albums</h1>
+  <small>Loaded from black_albums.json</small>
+
+  <div class="filters">
+    <input id="filterText" placeholder="Filter by band or album">
+    <input id="filterGenre" placeholder="Filter by genre (e.g. black, death)">
+  </div>
+
+  <table id="albumsTable">
+    <thead>
+      <tr>
+        <th data-key="band_name">Band</th>
+        <th data-key="album_name">Album</th>
+        <th data-key="year">Year</th>
+        <th data-key="genres">Genres</th>
+        <th data-key="rating">Rating</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+  const tbody = document.querySelector('#albumsTable tbody');
+  const filterTextInput = document.querySelector('#filterText');
+  const filterGenreInput = document.querySelector('#filterGenre');
+
+  let albums = [];
+  let currentData = [];
+  let currentSort = { key: null, dir: 1 };
+
+  function updateHeaderSortIndicator() {
+    // Clear all arrows first
+    document.querySelectorAll('#albumsTable thead th').forEach(th => {
+      th.innerHTML = th.innerHTML.replace(/[↑↓]/g, '');
+    });
+    
+    // Add arrow to active column
+    if (currentSort.key) {
+      const activeTh = document.querySelector(`#albumsTable th[data-key="${currentSort.key}"]`);
+      if (activeTh) {
+        const arrow = currentSort.dir === 1 ? ' ↑' : ' ↓';
+        activeTh.innerHTML += arrow;
+      }
+    }
+  }
+
+  function renderTable(rows) {
+    tbody.innerHTML = '';
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.band_name}</td>
+        <td><a href="${r.link}" target="_blank" rel="noopener noreferrer">${r.album_name}</a></td>
+        <td>${r.year}</td>
+        <td>${r.genres}</td>
+        <td>${r.rating || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function sortBy(key) {
+    if (currentSort.key === key) {
+      currentSort.dir *= -1;
+    } else {
+      currentSort.key = key;
+      currentSort.dir = 1;
+    }
+
+    currentData.sort((a, b) => {
+      const va = a[key] ?? '';
+      const vb = b[key] ?? '';
+      const numA = Number(va);
+      const numB = Number(vb);
+      if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+        return (numA - numB) * currentSort.dir;
+      }
+      return String(va).localeCompare(String(vb)) * currentSort.dir;
+    });
+
+    renderTable(currentData);
+    updateHeaderSortIndicator();  // ← NEW: Update arrows
+  }
+
+  function applyFilter() {
+    const qText = filterTextInput.value.toLowerCase().trim();
+    const qGenre = filterGenreInput.value.toLowerCase().trim();
+
+    currentData = albums.filter(a => {
+      const band = (a.band_name || '').toLowerCase();
+      const album = (a.album_name || '').toLowerCase();
+      const genres = (a.genres || '').toLowerCase();
+
+      const textMatch = !qText ||
+        band.includes(qText) ||
+        album.includes(qText);
+
+      const genreMatch = !qGenre ||
+        genres.includes(qGenre);
+
+      return textMatch && genreMatch;
+    });
+
+    if (currentSort.key) {
+      sortBy(currentSort.key);
+    } else {
+      renderTable(currentData);
+      updateHeaderSortIndicator();
+    }
+  }
+
+  document.querySelectorAll('#albumsTable thead th').forEach(th => {
+    th.addEventListener('click', () => sortBy(th.dataset.key));
+  });
+
+  filterTextInput.addEventListener('input', applyFilter);
+  filterGenreInput.addEventListener('input', applyFilter);
+
+  fetch('./black_albums.json')
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error('Failed to load black_albums.json: ' + resp.status);
+      }
+      return resp.json();
+    })
+    .then(data => {
+      albums = data;
+      currentData = [...albums];
+      renderTable(currentData);
+      updateHeaderSortIndicator();
+    })
+    .catch(err => {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="5">Error loading JSON.</td></tr>';
+    });
+</script>
+</body>
+</html>

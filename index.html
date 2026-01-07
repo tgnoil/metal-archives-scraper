@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Metal Archives Discographies</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); 
+      color: #eee; 
+      margin: 0;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { 
+      font-size: 2.5rem; 
+      text-align: center; 
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      background: linear-gradient(90deg, #7fd0ff, #ff6b6b, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle { 
+      text-align: center; 
+      color: #aaa; 
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+    }
+    .genre-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 2rem;
+    }
+    .genre-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .genre-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border-color: #7fd0ff;
+    }
+    .genre-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .genre-link {
+      display: inline-block;
+      background: linear-gradient(45deg, #7fd0ff, #4ecdc4);
+      color: #111;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+    .genre-link:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(127,208,255,0.4);
+    }
+    .stats {
+      color: #7fd0ff;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 4rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤘 Metal Archives Hub</h1>
+    <p class="subtitle">Interactive discographies scraped from Wikipedia → Metal Archives</p>
+
+    <div class="genre-grid">
+      <div class="genre-card">
+        <div class="genre-name">💀 Doom Metal</div>
+        <a href="doom.html" class="genre-link">View Doom Albums →</a>
+        <div class="stats">Full-length albums with ratings & sorting</div>
+      </div>
+
+      <div class="genre-card">
+        <div class="genre-name">⚫ Black Metal</div>
+        <a href="black.html" class="genre-link">View Black Albums →</a>
+        <div class="stats">Full-length albums with ratings & sorting</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Generated from <a href="https://github.com/tgnoil/metal-archives-scraper" target="_blank">metal-archives-scraper</a></p>
+    </div>
+  </div>
+</body>
+</html>
